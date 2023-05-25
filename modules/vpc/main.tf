@@ -19,6 +19,7 @@ resource "aws_internet_gateway" "agharameezgw" {
 
 # Elastic Ip for NAT
 resource "aws_eip" "nat_eip" {
+  for_each   = var.privateprefix
   vpc        = true
   depends_on = [aws_internet_gateway.agharameezgw]
 
@@ -26,8 +27,13 @@ resource "aws_eip" "nat_eip" {
 
 # Create a NAT
 resource "aws_nat_gateway" "nat" {
-  allocation_id = aws_eip.nat_eip.id
-  subnet_id     = values(aws_subnet.main-Private-subnet)[0].id
+  depends_on    = [aws_subnet.main-Public-subnet]
+  for_each      = var.privateprefix
+  allocation_id = aws_eip.nat_eip[each.key].id
+  subnet_id     = aws_subnet.main-Public-subnet[each.key].id
+  tags = {
+    "Name" = "${var.tags}-NatGateway--${each.key}"
+  }
 }
 
 # Create a Main Public Subnet
@@ -54,14 +60,14 @@ resource "aws_subnet" "main-Private-subnet" {
 resource "aws_route_table" "public_route_table" {
   vpc_id = aws_vpc.agharameezvpc.id
   tags = {
-    Name = "Public Route Table"
+    Name = "${var.tags}-Public Route Table"
   }
 }
 
 resource "aws_route_table" "private_route_table" {
   vpc_id = aws_vpc.agharameezvpc.id
   tags = {
-    Name = "Private Route Table"
+    Name = "${var.tags}-Private Route Table"
   }
 }
 # Create a Public Route
@@ -72,9 +78,10 @@ resource "aws_route" "public_route" {
 }
 # # Create a Private Route
 resource "aws_route" "private_route" {
+  for_each               = var.privateprefix
   route_table_id         = aws_route_table.private_route_table.id
-  destination_cidr_block = "10.0.2.0/24"
-  nat_gateway_id         = aws_nat_gateway.nat.id
+  destination_cidr_block = aws_subnet.main-Public-subnet[each.key].cidr_block
+  nat_gateway_id         = aws_nat_gateway.nat[each.key].id
 }
 resource "aws_route_table_association" "public_subnet_association" {
   for_each       = aws_subnet.main-Public-subnet

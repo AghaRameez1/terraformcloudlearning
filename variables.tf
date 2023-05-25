@@ -18,6 +18,14 @@ variable "publicprefix" {
     sub-1 = {
       az   = "eu-west-1a"
       cidr = "10.0.2.0/24"
+    },
+    sub-2 = {
+      az   = "eu-west-1b"
+      cidr = "10.0.3.0/24"
+    },
+    sub-3 = {
+      az   = "eu-west-1c"
+      cidr = "10.0.4.0/24"
     }
   }
 }
@@ -27,11 +35,15 @@ variable "privateprefix" {
   default = {
     sub-1 = {
       az   = "eu-west-1a"
-      cidr = "10.0.3.0/24"
+      cidr = "10.0.5.0/24"
     },
     sub-2 = {
       az   = "eu-west-1b"
-      cidr = "10.0.4.0/24"
+      cidr = "10.0.6.0/24"
+    },
+    sub-3 = {
+      az   = "eu-west-1c"
+      cidr = "10.0.7.0/24"
     }
   }
 }

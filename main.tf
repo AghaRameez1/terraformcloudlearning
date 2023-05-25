@@ -7,10 +7,11 @@ module "dynamic-vpc" {
 }
 
 
-module "lambdafunction" {
-  source            = "./modules/lambda"
-  agharameezSG      = module.dynamic-vpc.security-group
-  private_subnet_id = module.dynamic-vpc.private_subnet_id
+# module "lambdafunction" {
+#   source            = "./modules/lambda"
+#   agharameezSG      = module.dynamic-vpc.security-group
+#   private_subnet_id = module.dynamic-vpc.private_subnet_id
+#   tags              = var.tags
 
 
-}
+# }

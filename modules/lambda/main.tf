@@ -22,7 +22,7 @@ resource "aws_dynamodb_table" "basic-dynamodb-table" {
   }
 
   tags = {
-    Name        = "dynamodb-table-1"
+    Name        = "${var.tags}-dynamodb-table-1"
     Environment = "staging"
   }
 }
@@ -74,37 +74,10 @@ resource "aws_iam_role_policy" "dynamodb_read_log_policy" {
 {
   "Version": "2012-10-17",
   "Statement": [
-   {
-        "Action": [ "logs:*" ],
-        "Effect": "Allow",
-        "Resource": [ "arn:aws:logs:*:*:*" ]
-    },
-    {
-        "Action": [ "dynamodb:BatchGetItem",
-                    "dynamodb:GetItem",
-                    "dynamodb:GetRecords",
-                    "dynamodb:Scan",
-                    "dynamodb:Query",
-                    "dynamodb:GetShardIterator",
-                    "dynamodb:DescribeStream",
-                    "dynamodb:ListStreams" ],
-        "Effect": "Allow",
-        "Resource": [
-          "${aws_dynamodb_table.basic-dynamodb-table.arn}",
-          "${aws_dynamodb_table.basic-dynamodb-table.arn}/*"
-        ]
-    },
-    {
-      "Action":["sns:Publish"],
-      "Effect":"Allow",
-      "Resource":["${aws_sns_topic.dynamoLambdaSNS.arn}"]
-    },
     {
       "Effect":"Allow",
       "Action":[
-        "ec2:CreateNetworkInterface",
-        "ec2:DescribeNetworkInterfaces",
-        "ec2:DeleteNetworkInterface"
+        "*"
       ],
       "Resource":["*"]
     }
@@ -120,12 +93,8 @@ resource "aws_iam_role_policy" "LambdaSNS" {
 {
   "Version": "2012-10-17",
   "Statement": [
-   {
-        "Action": ["logs:*"],
-        "Effect": "Allow",
-        "Resource": ["arn:aws:logs:*:*:*"]
-    },
     {
+      
       "Action":["*"],
       "Effect":"Allow",
       "Resource":["*"]
@@ -160,6 +129,9 @@ resource "aws_lambda_function" "dynamolambda" {
       SNS_TOPIC_ARN = aws_sns_topic.dynamoLambdaSNS.arn
     }
   }
+  tags = {
+    Name = "${var.tags}-lambda"
+  }
 }
 
 data "archive_file" "lambdaSQS" {
@@ -185,6 +157,9 @@ resource "aws_lambda_function" "SQSlambda" {
       SNS_TOPIC_ARN = aws_sns_topic.Emailtopic.arn
     }
   }
+  tags = {
+    Name = "${var.tags}-lambda"
+  }
 }
 
 
@@ -197,7 +172,7 @@ resource "aws_lambda_event_source_mapping" "agharameezEvent" {
 
 resource "aws_sqs_queue" "agharameezSQS" {
   name                      = "agharameezSQS"
-  delay_seconds             = 1
+  delay_seconds             = 30
   max_message_size          = 2048
   message_retention_seconds = 86400
   receive_wait_time_seconds = 1
@@ -207,12 +182,15 @@ resource "aws_sqs_queue" "agharameezSQS" {
   "Version": "2012-10-17",
   "Statement": [
     {
-  "Action":["*"],
+    "Action":["*"],
     "Effect":"Allow",
     "Resource":["*"]
 }]
 }
 EOF
+  tags = {
+    Name = "${var.tags}-SQS"
+  }
 }
 resource "aws_sns_topic_subscription" "user_updates_sqs_target" {
   topic_arn = aws_sns_topic.dynamoLambdaSNS.arn
