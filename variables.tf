@@ -1,7 +1,16 @@
-variable "tags" {
+variable "name" {
   type        = string
-  description = "Enter Tags for resources"
+  description = "Enter name for resources"
   default     = "agharameez"
+}
+
+variable "tags" {
+  type = map(any)
+  default = {
+    Created_by   = "agharameez"
+    Envviornment = "dev"
+
+  }
 }
 
 
@@ -13,37 +22,11 @@ variable "cidr_block" {
 
 #map of maps for create subnets
 variable "publicprefix" {
-  type = map(any)
-  default = {
-    sub-1 = {
-      az   = "eu-west-1a"
-      cidr = "10.0.2.0/24"
-    },
-    sub-2 = {
-      az   = "eu-west-1b"
-      cidr = "10.0.3.0/24"
-    },
-    sub-3 = {
-      az   = "eu-west-1c"
-      cidr = "10.0.4.0/24"
-    }
-  }
+  type    = list(any)
+  default = ["10.0.2.0/24", "10.0.3.0/24", "10.0.4.0/24", "10.0.9.0/24", "10.0.14.0/24"]
 }
 
 variable "privateprefix" {
-  type = map(any)
-  default = {
-    sub-1 = {
-      az   = "eu-west-1a"
-      cidr = "10.0.5.0/24"
-    },
-    sub-2 = {
-      az   = "eu-west-1b"
-      cidr = "10.0.6.0/24"
-    },
-    sub-3 = {
-      az   = "eu-west-1c"
-      cidr = "10.0.7.0/24"
-    }
-  }
+  type    = list(any)
+  default = ["10.0.5.0/24", "10.0.6.0/24", "10.0.7.0/24", "10.0.8.0/24", "10.0.10.0/24", "10.0.11.0/24", "10.0.12.0/24", "10.0.13.0/24"]
 }

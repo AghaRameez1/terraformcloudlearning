@@ -11,3 +11,6 @@ variable "publicprefix" {
 variable "privateprefix" {
 
 }
+variable "name" {
+
+}

@@ -4,6 +4,7 @@ module "dynamic-vpc" {
   tags          = var.tags
   publicprefix  = var.publicprefix
   privateprefix = var.privateprefix
+  name          = var.name
 }
 
 
