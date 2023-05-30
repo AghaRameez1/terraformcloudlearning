@@ -14,3 +14,7 @@ variable "privateprefix" {
 variable "name" {
 
 }
+
+variable "nat_gateway" {
+
+}

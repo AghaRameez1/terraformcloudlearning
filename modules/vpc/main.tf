@@ -21,9 +21,12 @@ data "aws_availability_zones" "azs" {
 
 }
 
+locals {
+  nat_count = (var.nat_gateway <= length(data.aws_availability_zones.azs.names) ? var.nat_gateway : length(data.aws_availability_zones.azs.names))
+}
 # Elastic Ip for NAT
 resource "aws_eip" "nat_eip" {
-  count      = (length(var.privateprefix) <= length(data.aws_availability_zones.azs) ? length(data.aws_availability_zones.azs.names) : length(var.publicprefix))
+  count      = local.nat_count
   vpc        = true
   depends_on = [aws_internet_gateway.agharameezgw]
 
@@ -33,7 +36,7 @@ resource "aws_eip" "nat_eip" {
 # Create a NAT
 resource "aws_nat_gateway" "nat" {
   depends_on    = [aws_subnet.main-Private-subnet, data.aws_availability_zones.azs]
-  count         = (length(var.privateprefix) <= length(data.aws_availability_zones.azs) ? length(data.aws_availability_zones.azs.names) : length(var.publicprefix))
+  count         = local.nat_count
   allocation_id = aws_eip.nat_eip[count.index].id
   subnet_id     = aws_subnet.main-Public-subnet[count.index].id
   tags = merge(var.tags, {
@@ -74,7 +77,7 @@ resource "aws_route_table" "public_route_table" {
 }
 
 resource "aws_route_table" "private_route_table" {
-  count  = (length(var.privateprefix) <= length(data.aws_availability_zones.azs) ? length(data.aws_availability_zones.azs.names) : length(var.publicprefix))
+  count  = local.nat_count
   vpc_id = aws_vpc.agharameezvpc.id
   tags = merge(var.tags, {
     "Name" = "AghaRameez-PrivateRT-${count.index}"
@@ -89,7 +92,7 @@ resource "aws_route" "public_route" {
 }
 # # # Create a Private Route
 resource "aws_route" "private_route" {
-  count                  = (length(var.privateprefix) <= length(data.aws_availability_zones.azs) ? length(data.aws_availability_zones.azs.names) : length(var.publicprefix))
+  count                  = local.nat_count
   route_table_id         = aws_route_table.private_route_table[count.index].id
   destination_cidr_block = aws_subnet.main-Public-subnet[count.index].cidr_block
   nat_gateway_id         = aws_nat_gateway.nat[count.index].id

@@ -5,6 +5,7 @@ module "dynamic-vpc" {
   publicprefix  = var.publicprefix
   privateprefix = var.privateprefix
   name          = var.name
+  nat_gateway   = var.nat_gateway
 }
 
 
