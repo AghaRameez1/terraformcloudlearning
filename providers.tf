@@ -1,10 +1,17 @@
 terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 4.0"
+  cloud {
+    organization = "terraformcloudlearning"
+    workspaces {
+      name = "agharameeztestterraform"
     }
+
   }
+  # required_providers {
+  #   aws = {
+  #     source  = "hashicorp/aws"
+  #     version = "~> 4.0"
+  #   }
+  # }
 }
 
 # Configure the AWS Provider
@@ -14,8 +21,8 @@ terraform {
 #   profile                  = "eurus"
 # }
 
-provider "aws" {
-  region     = "eu-west-1"
-  access_key = var.AWS_ACCESS_KEY
-  secret_key = var.AWS_SECRET_KEY
-}
+# provider "aws" {
+#   region     = "eu-west-1"
+#   access_key = var.AWS_ACCESS_KEY
+#   secret_key = var.AWS_SECRET_KEY
+# }
