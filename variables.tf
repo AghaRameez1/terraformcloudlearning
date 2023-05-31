@@ -35,3 +35,10 @@ variable "nat_gateway" {
   type    = number
   default = 1
 }
+variable "AWS_ACCESS_KEY" {
+  sensitive = true
+
+}
+variable "AWS_SECRET_KEY" {
+  sensitive = true
+}
